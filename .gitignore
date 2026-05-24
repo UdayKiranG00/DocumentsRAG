@@ -1,3 +1,8 @@
+node_modules/
+.idea/
+gen-prompt/
+sample.txt
+Chunking-Types/
 .htaccess
 css.php
 rpc/
@@ -8,4 +13,3 @@ sites/site*/public/setup/
 sites/site*/public/theme/
 textpattern/
 HISTORY.txt
-README.txt
