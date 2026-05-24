@@ -3,12 +3,10 @@ This application is useful to search through long documentations in natural lang
 
 ## Instructions
 1. Pull the code
-2. Run
-3. ```cmd
+2. Run ```cmd
    npm install
 4. place you document in Input-Pdfs/ in project directory
-5. Run
-6. ```cmd
+5. Run ```cmd
    node searchDocs.js [inputpath] [query]
 
 #### Look at this test case for overview
