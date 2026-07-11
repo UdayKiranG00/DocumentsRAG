@@ -12,5 +12,5 @@ This application is useful to search through long documentations in natural lang
    node searchDocs.js [inputpath] [query]
 
 #### Look at this test case for overview
-eg: PUBG competition rule book.
-![Testcase loading...](./Tests-Images/pubgrulebook.png)
+eg: Searched through HR policy document of Community foundation found over internet.
+![Testcase loading...](./Tests-Images/HR_Policy_CommunityFoundation.png)
