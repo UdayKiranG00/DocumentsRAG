@@ -1,74 +1,77 @@
 import fs from "fs/promises";
-import { createCollection, checkCollection, addToCollection, getMyCollection,deleteCollection} from "./chroma-fn.js"
-import { generateText} from "./model-connector.js";
-import {nonOcrToPdf,extractOcrPdf} from "./pdf2text.js";
-import {chunkMyDocument} from "./example.js";
+import {
+  createCollection,
+  checkCollection,
+  addToCollection,
+  getMyCollection,
+  deleteCollection,
+} from "./chroma-fn.js";
+import { generateText } from "./model-connector.js";
+import { nonOcrToPdf, extractOcrPdf } from "./pdf2text.js";
+import { chunkMyDocument } from "./semantic-chunking.js";
 import path from "path";
 
 async function main() {
+  const args = process.argv.slice(2);
+  const userInput = args[0];
 
-   const args = process.argv.slice(2);
-   const userInput = args[0];
+  //"E:/Projects/Input-Pdfs/CompetitionRulebookPUBGM.pdf";
+  let pdfFilePath = args[0];
+  let baseName = path.basename(pdfFilePath, ".pdf");
+  let textFilePath = "E:/SearchDocs/Text-Files/" + baseName + ".txt";
 
-//"E:/Projects/Input-Pdfs/CompetitionRulebookPUBGM.pdf";
-   let pdfFilePath = args[0];
-   let baseName = path.basename(pdfFilePath,'.pdf');
-   let textFilePath = "E:/Projects/Text-Files/"+baseName+".txt";
-
-  /*Step1: pdf to text for ocr, non ocr
-  const isOcr = await extractOcrPdf(pdfFilePath,textFilePath).catch(console.error);
-  //console.log("is ocr: "+isOcr);
-  if(!isOcr){
-  await nonOcrToPdf(pdfFilePath,textFilePath).catch(console.error);
-  }*/
-
-  //step2: fn to read text
-  let fileData;
-  async function readFile(filePath) {
-    try {
-      const content = await fs.readFile(filePath, "utf8");
-      const modifiedFileData = content.replace(/\r?\n/g, '');
-      await fs.writeFile('./sample.txt',modifiedFileData,'utf-8');
-      fileData = await chunkMyDocument(modifiedFileData,0.6).catch((err)=>console.log(err));
-    } catch (error) {
-      console.error(`Error reading file: ${error.message}`);
-    }
-  }
-
-  // read text to store in vector db
-  //await readFile(textFilePath);
-  //fileData = fileData.split(/\r?\n/);
-
-  //step3: establish connection to chroma vector db
   const collectionName = baseName + "_collection";
   //if collection is not existed create it.
-  const isExist = await checkCollection(collectionName).catch((error)=>console.log(error));
+  const isExist = await checkCollection(collectionName).catch((error) =>
+    console.log(error),
+  );
   //console.log(isExist);
   let collection;
-  if (!isExist) {
+  if (isExist) {
+    collection = await getMyCollection({ name: collectionName });
+  } else {
+    //Step1: pdf to text for ocr, non ocr
+    const isOcr = await extractOcrPdf(pdfFilePath, textFilePath).catch(
+      console.error,
+    );
+    //console.log("is ocr: "+isOcr);
+    if (!isOcr) {
+      await nonOcrToPdf(pdfFilePath, textFilePath).catch(console.error);
+    }
+
+    //step2: fn to read text
+    let fileData;
+    async function readFile(filePath) {
+      try {
+        const content = await fs.readFile(filePath, "utf8");
+        const modifiedFileData = content.replace(/\r?\n/g, "");
+        //await fs.writeFile("./sample.txt", modifiedFileData, "utf-8");
+        fileData = await chunkMyDocument(modifiedFileData, 0.6).catch((err) =>
+          console.log(err),
+        );
+      } catch (error) {
+        console.error(`Error reading file: ${error.message}`);
+      }
+    }
+    // read text to store in vector db
+    await readFile(textFilePath);
     //Create a collection to store the records or chunks.
     collection = await createCollection(collectionName);
     //store data in collection
-    await addToCollection(fileData,collection);
-  } else {
-    collection = await getMyCollection({ name: collectionName });
-    //console.log(collection);
+    await addToCollection(fileData, collection);
   }
-
-const userQuery = args[1];
+  const userQuery = args[1];
   //input query-> search vector db.
   const results = await collection.query({
-    queryTexts: [
-      userQuery,
-    ],
-    nResults: 30,
+    queryTexts: [userQuery],
+    nResults: 60,
   });
   //console.log(results.documents);
+  console.log("User Query: ",userQuery);
   results.documents.forEach((doc) => {
-  let response = generateText(doc,userQuery);
-  //console.log(doc+"next   "+response);
+    let response = generateText(doc, userQuery);
+    //console.log(doc+"next   "+response);
   });
-
 }
 
 main().catch(console.error);
@@ -85,3 +88,4 @@ async function deleteCollections() {
 }
 
 deleteCollections();*/
+//deleteCollection({name:"HRGuide_Policy_collection"});

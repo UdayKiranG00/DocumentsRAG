@@ -6,9 +6,11 @@ const embedder = new DefaultEmbeddingFunction();
 
 //Create chroma client with server ip address.
 const client = new ChromaClient({
-  path: "http://localhost:8082",
+  host: "localhost", 
+  port: 8082, 
+  ssl: false 
 });
-
+//  path: "http://localhost:8082",
 async function checkCollection(collectionName) {
   let collections = await client.listCollections();
 
@@ -23,7 +25,7 @@ async function createCollection(collectionName) {
   return collection;
 }
 
-async function addToCollection(fileData,collection) {
+async function addToCollection(fileData, collection) {
   let j = 0;
   while (true) {
     //Store index and docs in arrays from fileData.
@@ -51,7 +53,13 @@ async function getMyCollection(coll) {
   return await client.getCollection(coll);
 }
 
-async function deleteCollection(coll){
+async function deleteCollection(coll) {
   await client.deleteCollection(coll);
 }
-export { createCollection, checkCollection, addToCollection, getMyCollection ,deleteCollection};
+export {
+  createCollection,
+  checkCollection,
+  addToCollection,
+  getMyCollection,
+  deleteCollection,
+};

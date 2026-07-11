@@ -1,0 +1,64 @@
+Problems: 
+user may want to summarise whole document,
+summarise specific section,
+a pdf can be of different formats
+eg: pdf's having headers and paragraphs format,
+complete paragraph types, tables, images, graphs etc..
+
+solution: identifying specific cases and solve them to find relations b/w data, (ontology)
+
+Run Chroma db server before main command
+chroma run --host 127.0.0.1 --port 8082 --path E:/Chroma-collecions/
+
+Code to embed image and text to same vector space.
+
+import chromadb
+from chromadb.utils.embedding_functions import OpenCLIPEmbeddingFunction
+from chromadb.utils.data_loaders import ImageLoader
+
+client = chromadb.PersistentClient(path="./multimodal_db")
+
+# 1. Initialize OpenCLIP and the Image Loader
+embedding_function = OpenCLIPEmbeddingFunction()
+image_loader = ImageLoader()
+
+# 2. Create the unified collection
+collection = client.create_collection(
+    name="mixed_assets", 
+    embedding_function=embedding_function,
+    data_loader=image_loader
+)
+
+# 3. Add TEXT documents to the collection
+collection.add(
+    ids=["text_doc_1", "text_doc_2"],
+    documents=[
+        "The Ferrari F40 is a mid-engine, rear-wheel drive sports car engineered with a twin-turbo V8.",
+        "Golden retrievers are incredibly loyal family dogs that love to swim and fetch."
+    ],
+    metadatas=[{"type": "text"}, {"type": "text"}]
+)
+
+# 4. Add IMAGES to the exact same collection
+collection.add(
+    ids=["image_asset_1", "image_asset_2"],
+    uris=[
+        "path/to/red_ferrari.jpg",
+        "path/to/puppy_in_grass.png"
+    ],
+    metadatas=[{"type": "image"}, {"type": "image"}]
+)
+
+# 5. EXECUTE THE MIXED RETRIEVAL
+# A single text prompt will pull the closest matches from BOTH modalities
+search_results = collection.query(
+    query_texts=["Show me fast Italian cars"],
+    n_results=2
+)
+
+print(search_results)
+
+
+all-MiniLLM-L6-v2 -- 384 dimensions -- single modality
+Openclip -- ViT-B-32 -- 512 dimensions -- multimodal
+all open clip models are opensource and has dual encoder architecture.
