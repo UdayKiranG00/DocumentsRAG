@@ -27,4 +27,4 @@ async function generateText(context, query) {
   }
 }
 
-export { generateText };
+export { generateText }; 

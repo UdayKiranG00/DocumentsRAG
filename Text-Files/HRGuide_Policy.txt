@@ -513,7 +513,7 @@ ffi
 cer
 by the 26th of each month (adjust to
  
-fi
+fi 
 t your Foundation’s practices and pay periods).
 Regular attendance and punctuality are an important part of an employee’s responsibility. Therefore, established
 working hours shall be adhered to. Any lateness or absenteeism shall be reported as far in advance of starting time

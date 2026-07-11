@@ -3,7 +3,7 @@ import { DefaultEmbeddingFunction } from "@chroma-core/default-embed";
 
 //Create embedding function.
 const embedder = new DefaultEmbeddingFunction();
-
+ 
 //Create chroma client with server ip address.
 const client = new ChromaClient({
   host: "localhost", 

@@ -59,7 +59,7 @@ async function main() {
     collection = await createCollection(collectionName);
     //store data in collection
     await addToCollection(fileData, collection);
-  }
+  } 
   const userQuery = args[1];
   //input query-> search vector db.
   const results = await collection.query({
